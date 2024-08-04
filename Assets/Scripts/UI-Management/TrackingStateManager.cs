@@ -17,25 +17,28 @@ public class TrackingStateManager : MonoBehaviour
 	{
 		isTracking = false;
 		activeTracking.SetActive(false);
-		massVisualizer = GameObject.Find(nameOfMassVisualisationUIElement); //doesn´t work beacause wanted object is inactive
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
+		if (massVisualizer == null) {
+			massVisualizer = GameObject.Find(nameOfMassVisualisationUIElement); //doesn´t work beacause wanted object is inactive
+		}
+
 		isTracking = singleBodyManager.TrackingState;
 
-		if (isTracking && !activeTracking.activeSelf)
-		{
+		if (isTracking && !activeTracking.activeSelf) {
 			activeTracking.SetActive(true);
 			notTracking.SetActive(false);
 			massVisualizer.SetActive(true);
 		}
-		if (!isTracking && !notTracking.activeSelf)
-		{
+		if (!isTracking && !notTracking.activeSelf) {
 			notTracking.SetActive(true);
 			activeTracking.SetActive(false);
-			massVisualizer.SetActive(false);
+			if (massVisualizer != null) {
+				massVisualizer.SetActive(false);
+			}
 		}
 	}
 

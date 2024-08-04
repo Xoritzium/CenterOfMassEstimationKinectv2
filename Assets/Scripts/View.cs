@@ -8,7 +8,7 @@ using Windows.Kinect;
 
 using Toggle = UnityEngine.UI.Toggle;
 
-public class View: MonoBehaviour
+public class View : MonoBehaviour
 {
 	public MultiSourceManager multiSourceManager; // for depth and rgb data
 	public ResolveKinectJointDataIntoMasses kinectMassResolver;
@@ -35,8 +35,7 @@ public class View: MonoBehaviour
 
 
 	private bool _displayIndividualMasses { get; set; }
-	public bool DisplayIndividualMasses
-	{
+	public bool DisplayIndividualMasses {
 		get { return _displayIndividualMasses; }
 		set { _displayIndividualMasses = value; }
 	}
@@ -46,8 +45,7 @@ public class View: MonoBehaviour
 	{
 		individualMasses2DPositions = new List<ColorSpacePoint>();
 		_individualCenterOfMasses = new RawImage[individualMassesCount];
-		for (int i = 0; i < individualMassesCount; i++)
-		{
+		for (int i = 0; i < individualMassesCount; i++) {
 			individualMasses2DPositions.Add(new ColorSpacePoint());
 			_individualCenterOfMasses[i] = Instantiate(individualCenterOfMass);
 			_individualCenterOfMasses[i].transform.SetParent(transform, false);
@@ -73,14 +71,13 @@ public class View: MonoBehaviour
 	void Update()
 	{
 		kinectRGBFeed.texture = multiSourceManager.GetColorTexture();
-		if (kinectMassResolver.Masses != null && singleBodyManager.TrackingState)
-		{ // durch KinectSingleBodyManager.Traackinstate ersetzén!
+		if (kinectMassResolver.Masses != null && singleBodyManager.TrackingState) {
+
 			UpdateAllIndividualMasses(kinectMassResolver.Masses);
 			DrawIndividualMassesOnTexture();
+
 			_absoluteCenterOfMass.gameObject.SetActive(true);
-		}
-		else
-		{
+		} else {
 			_absoluteCenterOfMass.gameObject.SetActive(false);
 		}
 
@@ -93,11 +90,10 @@ public class View: MonoBehaviour
 	private void DrawCenterOfMassOnTexture()
 	{
 		Vector3 v = new Vector3(coMColorPoint.X, coMColorPoint.Y, 0);
-		if (v.x == float.NegativeInfinity)
-		{
+		if (v.x == float.NegativeInfinity) {
 			return;
 		}
-		float diffMirrorLinePoint = (v.y - mirrorLine); // recalculate due to flipped rgb feed, kann man auch in einzelne Methode auslagern.
+		float diffMirrorLinePoint = (v.y - mirrorLine);
 		Vector3 jointPos = new(v.x, mirrorLine - diffMirrorLinePoint, v.z);
 		_absoluteCenterOfMass.rectTransform.position = jointPos;
 
@@ -107,20 +103,22 @@ public class View: MonoBehaviour
 	/// </summary>
 	private void DrawIndividualMassesOnTexture()
 	{
-		if (_displayIndividualMasses && singleBodyManager.TrackingState)
-		{ // ersetzen durch KinectSingleBodyManager.TrackingState
-			for (int i = 0; i < _individualCenterOfMasses.Length; i++)
-			{
-				_individualCenterOfMasses[i].gameObject.SetActive(true);
-				DrawSingleMass(_individualCenterOfMasses[i], individualMasses2DPositions[i]);
-			}
+		if (_displayIndividualMasses) {
+
+		for (int i = 0; i < _individualCenterOfMasses.Length; i++) {
+			_individualCenterOfMasses[i].gameObject.SetActive(true);
+			DrawSingleMass(_individualCenterOfMasses[i], individualMasses2DPositions[i]);
 		}
-		else
-		{
-			for (int i = 0; i < _individualCenterOfMasses.Length; i++)
-			{
-				_individualCenterOfMasses[i].gameObject.SetActive(false);
-			}
+		} else {
+			HideIndividualCenterOfMass();
+		}
+
+	}
+	private void HideIndividualCenterOfMass()
+	{
+
+		for (int i = 0; i < _individualCenterOfMasses.Length; i++) {
+			_individualCenterOfMasses[i].gameObject.SetActive(false);
 		}
 	}
 	/// <summary>
@@ -130,9 +128,13 @@ public class View: MonoBehaviour
 	/// <param name="pos">new positio</param>
 	private void DrawSingleMass(RawImage mass, ColorSpacePoint pos)
 	{
+		if (pos.X == float.NegativeInfinity || pos.Y == float.NegativeInfinity) { // only assign valid colorspacepoint positions
+			return;
+		}
 		float mirror = (pos.Y - mirrorLine);
 		Vector3 drawPos = new(pos.X, mirrorLine - mirror, 0f);
 		mass.rectTransform.position = drawPos;
+
 	}
 
 
@@ -142,8 +144,7 @@ public class View: MonoBehaviour
 	/// <param name="masses"></param>
 	private void UpdateAllIndividualMasses(Vector3[] masses)
 	{
-		for (int i = 0; i < masses.Length; i++)
-		{
+		for (int i = 0; i < masses.Length; i++) {
 			ColorSpacePoint colorSpacePoint = CreateColorSpacePointFromVector3(masses[i]);
 			individualMasses2DPositions[i] = colorSpacePoint;
 		}

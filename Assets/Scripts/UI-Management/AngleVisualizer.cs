@@ -39,8 +39,7 @@ public class AngleVisualizer : MonoBehaviour
 	void Start()
 	{
 		_singleJointAngle = new AngleContainer[8];
-		for (int i = 0; i < _singleJointAngle.Length; i++)
-		{
+		for (int i = 0; i < _singleJointAngle.Length; i++) {
 			_singleJointAngle[i].joint = Instantiate(SingleJointAngle);
 			_singleJointAngle[i].joint.transform.SetParent(this.transform);
 			_singleJointAngle[i].joint.SetActive(false);
@@ -55,12 +54,10 @@ public class AngleVisualizer : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if (showJointAngles && kinectSingleBodyManager.TrackingState)
-		{
+		if (showJointAngles && kinectSingleBodyManager.TrackingState) {
 			ShowJointAngles();
 		}
-		if (!showJointAngles)
-		{
+		if (!showJointAngles || !kinectSingleBodyManager) {
 			HideJointAngles();
 		}
 	}
@@ -69,9 +66,8 @@ public class AngleVisualizer : MonoBehaviour
 	{
 		AngledJoint[] aj = angleManager.AngledJoints;
 		string angleDigits = "";
-		for (int i = 0; i < aj.Length; i++)
-		{ // change back to aj.Length
-		  // draw angles onto canvas, they need to be mirrored, like the masses
+		for (int i = 0; i < aj.Length; i++) { // change back to aj.Length
+											  // draw angles onto canvas, they need to be mirrored, like the masses
 			_singleJointAngle[i].joint.SetActive(true);
 			_singleJointAngle[i].lineRenderer.points = GetColorSpacePointsFromVectors(aj[i]);
 			_singleJointAngle[i].lineRenderer.SetAllDirty();
@@ -82,8 +78,7 @@ public class AngleVisualizer : MonoBehaviour
 
 	private void HideJointAngles()
 	{
-		for (int i = 0; i < _singleJointAngle.Length; i++)
-		{
+		for (int i = 0; i < _singleJointAngle.Length; i++) {
 			// draw angles onto canvas
 			_singleJointAngle[i].joint.SetActive(false);
 		}
@@ -102,8 +97,7 @@ public class AngleVisualizer : MonoBehaviour
 		ColorSpacePoint[] colorPoint = new ColorSpacePoint[3];
 		CameraSpacePoint[] cameraPoint = new CameraSpacePoint[3];
 		Vector2[] ret = new Vector2[3];
-		for (int i = 0; i < 3; i++)
-		{
+		for (int i = 0; i < 3; i++) {
 			cameraPoint[i].X = joint.data[i].x;
 			cameraPoint[i].Y = joint.data[i].y;
 			cameraPoint[i].Z = joint.data[i].z;
@@ -112,8 +106,7 @@ public class AngleVisualizer : MonoBehaviour
 		}
 		//flip data on y according to rgb view
 
-		for (int i = 0; i < 3; i++)
-		{
+		for (int i = 0; i < 3; i++) {
 			float diffMirrorLine = (colorPoint[i].Y - mirrorLine);
 			ret[i].x = colorPoint[i].X;
 			ret[i].y = mirrorLine - diffMirrorLine;

@@ -45,7 +45,7 @@ public class KinectSingleBodyManager : MonoBehaviour
 				break;
 			}
 		}
-		if (_body == null) { // kinect gives a body, even when there is none
+		if (_body == null || !_body.IsTracked) { // kinect returns a body, even when there is none
 
 			if (_trackingState) { _trackingState = false; }
 			return;
@@ -56,7 +56,7 @@ public class KinectSingleBodyManager : MonoBehaviour
 
 
 
-	
+
 	private Vector3 GetVectorFromJoint(Joint joint)
 	{
 
